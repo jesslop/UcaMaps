@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Uca Maps</string>
+    <string name="action_settings">Settings</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- webmap urls -->
+    <string name="default_basemap_url">http://www.arcgis.com/home/item.html?id=2161ba8a41114947bc7c533a24bdb150</string>
+    <string name="night_basemap_url">http://www.arcgis.com/home/item.html?id=739f5ce95a2a458ba8db9a43187853c6</string>
+
+    <!-- route service -->
+    <string name="routingservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/MapaUCA_2015v4/NAServer/Route</string>
+
+    <!-- geocode service -->
+    <string name="geocodeservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/features_locator/GeocodeServer</string>
+
+    <!-- place search hint -->
+    <string name="address">Place name or address</string>
+
+    <!-- action bar titles -->
+    <string name="menu_basemaps">Switch Theme</string>
+    <string name="action_location">Compass</string>
+    <string name="action_qr">Scan with QR Code</string>
+    <string name="action_sound">Sound On / Off</string>
+    <string name="action_voice">Female / Male</string>
+    <string name="action_about">About</string>
+
+    <!-- directions button text -->
+    <string name="get_route">Get Route</string>
+
+    <!-- location search hint -->
+    <string name="my_location">My Location</string>
+    <string name="need_location_fix">Need a location fix before \'My Location\' can be used</string>
+
+    <!-- dialog titles -->
+    <string name="title_routing_dialog">Routing</string>
+    <string name="title_directions_dialog">Directions</string>
+
+    <!-- progress dialog messages -->
+    <string name="fetching_basemap">Fetching Basemap</string>
+    <string name="address_search">Searching for a Place</string>
+    <string name="route_search">Searching for Route</string>
+    <string name="reverse_geocoding">Reverse Geocoding</string>
+    <string name="basemapSearchFailed">Basemap search failed</string>
+    <string name="routingFailed">Routing task failed</string>
+    <string name="addressSearchFailed">Address search failed</string>
+    <string name="noResultsFound">No results found</string>
+    <string name="route_time">Time</string>
+    <string name="route_distance">Distance</string>
+    <string name="swap_addresses">Interchange the addresses</string>
+    <string name="routing_title">Routing</string>
+    <string name="clearText">Clear Text</string>
+
+    <!-- Routing Dialog Fragment -->
+    <string name="to">TO </string>
+    <string name="from">FROM </string>
+
+    <!-- ImageView content Descriptions -->
+    <string name="icon_for_searchResult">Icon indicating Search</string>
+    <string name="icon_for_directions_and_routing">Get Directions or Get Route</string>
+    <string name="icon_cancel">Remove the current search</string>
+
+</resources>
