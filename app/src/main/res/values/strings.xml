@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Uca Maps</string>
+    <string name="basemap_thumbnail">basemap thumbnail</string>
     <string name="action_settings">Settings</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
@@ -7,6 +8,11 @@
     <!-- webmap urls -->
     <string name="default_basemap_url">http://www.arcgis.com/home/item.html?id=2161ba8a41114947bc7c533a24bdb150</string>
     <string name="night_basemap_url">http://www.arcgis.com/home/item.html?id=739f5ce95a2a458ba8db9a43187853c6</string>
+
+    <!-- content browser -->
+    <string name="fetching_maps">Fetching maps</string>
+    <string name="refresh">Refresh</string>
+    <string name="no_maps">No maps</string>
 
     <!-- route service -->
     <string name="routingservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/MapaUCA_2015v4/NAServer/Route</string>
@@ -33,11 +39,14 @@
     <string name="need_location_fix">Need a location fix before \'My Location\' can be used</string>
 
     <!-- dialog titles -->
+    <string name="title_basemaps_dialog">Select Base Map</string>
     <string name="title_routing_dialog">Routing</string>
     <string name="title_directions_dialog">Directions</string>
 
     <!-- progress dialog messages -->
     <string name="fetching_basemap">Fetching Basemap</string>
+    <string name="fetching_basemaps">Fetching Basemap Gallery</string>
+    <string name="fetching_selected_basemap">Fetching Selected Basemap</string>
     <string name="address_search">Searching for a Place</string>
     <string name="route_search">Searching for Route</string>
     <string name="reverse_geocoding">Reverse Geocoding</string>

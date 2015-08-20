@@ -23,6 +23,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import zero.ucamaps.basemaps.BasemapsDialogFragment;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -45,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.maps_app_activity);
+        setContentView(R.layout.uca_maps_activity);
         ButterKnife.inject(this);
         setupDrawer();
         setView();
@@ -166,11 +167,20 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onClick() {
-                //Coming soon
+                // Show BasemapsDialogFragment to offer a choice if basemaps.
+                // This calls back to onBasemapChanged() if one is selected.
+                BasemapsDialogFragment basemapsFrag = new BasemapsDialogFragment();
+                basemapsFrag.setBasemapsDialogListener(new BasemapsDialogFragment.BasemapsDialogListener() {
 
-                //Close and lock the drawer
+                    @Override
+                    public void onBasemapChanged(String itemId) {
+                        showMap(itemId);
+                    }
+                });
+                basemapsFrag.show(getFragmentManager(), null);
                 mDrawerLayout.closeDrawers();
             }
+
         });
         mDrawerItems.add(item);
 

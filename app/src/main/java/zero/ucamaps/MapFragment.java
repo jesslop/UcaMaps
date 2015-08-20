@@ -124,8 +124,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private Point mLocation = null;
 
 	// Graphics layer to show geocode and reverse geocode results
-	private GraphicsLayer mLocationLayer, mGraphicsLayer;
-    private Graphic mIdentifiedGraphic;
+	private GraphicsLayer mLocationLayer;
 	private Point mLocationLayerPoint;
 	private String mLocationLayerPointString;
 
@@ -651,7 +650,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		findParams.setLocation(mMapView.getCenter(),mMapView.getSpatialReference());
 
 		// Calculate distance for find operation
-		Envelope mapExtent = new Envelope();
+		Envelope mapExtent = new Envelope(-9934020.129737763,1537570.03146507,-9933138.998255534,1537913.3795470244);
 		mMapView.getExtent().queryEnvelope(mapExtent);
 		// assume map is in metres, other units wont work, double current envelope
 		double distance = (mapExtent != null && mapExtent.getWidth() > 0) ? mapExtent.getWidth() * 2 : 10000;
@@ -1039,6 +1038,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			routeFAF.setFeatures(new Graphic[] { sgStart, sgEnd });
 			routeFAF.setCompressedRequest(true);
 			routeParams.setStops(routeFAF);
+			//noinspection ResourceType
 			routeParams.setOutSpatialReference(mMapView.getSpatialReference());
 
 			// Solve the route
@@ -1086,7 +1086,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mRouteLayer.addGraphics(new Graphic[] { routeGraphic, startGraphic,endGraphic });
 
 			// Zoom to the extent of the entire route with a padding
-			mMapView.setExtent(route.getEnvelope(), 100);
+			mMapView.setExtent(route.getEnvelope(),100);
 
 			// Save routing directions so user can display them later
 			mRoutingDirections = route.getRoutingDirections();
@@ -1139,7 +1139,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
 			try {
 				// Our input and output spatial reference will be the same as the map
-				SpatialReference mapRef = mMapView.getSpatialReference();
+				@SuppressWarnings("ResourceType") SpatialReference mapRef = mMapView.getSpatialReference();
 				result = locator.reverseGeocode(mPoint, 100.0, mapRef, mapRef);
 				mLocationLayerPoint = mPoint;
 			} catch (Exception e) {
