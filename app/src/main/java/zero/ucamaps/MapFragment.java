@@ -3,6 +3,7 @@ package zero.ucamaps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -55,6 +56,7 @@ import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
 import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
+import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
@@ -64,6 +66,9 @@ import com.esri.core.geometry.Polyline;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.geometry.Unit;
 import com.esri.core.map.Graphic;
+import com.esri.core.portal.BaseMap;
+import com.esri.core.portal.Portal;
+import com.esri.core.portal.WebMap;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleLineSymbol.STYLE;
@@ -113,6 +118,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	// It is also used to construct the extent which map zooms to after the first GPS fix is retrieved.
 	private final static double SEARCH_RADIUS = 10;
     private String mBasemapPortalItem;
+	private String mBasemapPortalItemId;
 
 	//FrameLayout for the MapView
 	private FrameLayout mMapContainer;
@@ -124,8 +130,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private Point mLocation = null;
 
 	// Graphics layer to show geocode and reverse geocode results
-	private GraphicsLayer mLocationLayer, mGraphicsLayer;
-    private Graphic mIdentifiedGraphic;
+	private GraphicsLayer mLocationLayer;
 	private Point mLocationLayerPoint;
 	private String mLocationLayerPointString;
 
@@ -149,11 +154,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private LayoutInflater mInflater;
 	private String mStartLocation, mEndLocation;
 
-	public static MapFragment newInstance(String basemapPortalItem) {
+	public static MapFragment newInstance(String basemapPortalItemId) {
 		MapFragment mapFragment = new MapFragment();
 
 		Bundle args = new Bundle();
-		args.putString(KEY_BASEMAP_ITEM, basemapPortalItem);
+		args.putString(KEY_BASEMAP_ITEM, basemapPortalItemId);
 
 		mapFragment.setArguments(args);
 		return mapFragment;
@@ -173,7 +178,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 : getArguments();
         if (args != null) {
             mIsLocationTracking = args.getBoolean(KEY_IS_LOCATION_TRACKING);
-            mBasemapPortalItem = args.getString(KEY_BASEMAP_ITEM);
+            mBasemapPortalItemId = args.getString(KEY_BASEMAP_ITEM);
 
         }
         // Calling setRetainInstance() causes the Fragment instance to be retained when its Activity is destroyed and
@@ -188,14 +193,20 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
         mMapContainer = (FrameLayout) inflater.inflate(R.layout.map_fragment_layout,container,false);
 
-        // Add dynamic layer to MapView (Base)
-		String defaultBaseMapURL = getString(R.string.default_basemap_url);
-        MapView mapView = new MapView(getActivity(), defaultBaseMapURL,"", "");
 
-        // Set the MapView to allow the user to rotate the map when as part of a pinch gesture.
-        setMapView(mapView);
-        mapView.zoomin();
+		if (mBasemapPortalItemId != null) {
+			// show a map with the basemap represented by  mBasemapPortalItemId
+			loadWebMapIntoMapView(mBasemapPortalItemId, new Portal("http://www.arcgis.com", null));
+		} else {
+			// show the default map
+			String defaultBaseMapURL = getString(R.string.default_basemap_url);
+			MapView mapView = new MapView(getActivity(), defaultBaseMapURL,"", "");
 
+			// Set the MapView
+			setMapView(mapView);
+			mapView.zoomin();
+
+		}
 		return mMapContainer;
 	}
 
@@ -270,10 +281,55 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-		outState.putString(KEY_BASEMAP_ITEM, mBasemapPortalItem);
+		outState.putString(KEY_BASEMAP_ITEM, mBasemapPortalItemId);
 		outState.putBoolean(KEY_IS_LOCATION_TRACKING, mIsLocationTracking);
 
 	}
+
+    /**
+     * Loads a WebMap and creates a MapView from it which is set into the
+     * fragment's layout.
+     * @param basemapPortalItemId
+     *            The portal item id that represents the basemap.
+     * @throws Exception
+     *             if WebMap loading failed.
+     */
+    private void loadWebMapIntoMapView(final String basemapPortalItemId, final Portal portal) {
+
+        TaskExecutor.getInstance().getThreadPool().submit(new Callable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
+
+                // load a WebMap instance from the portal item
+                final WebMap webmap = WebMap.newInstance(basemapPortalItemId, portal);
+
+                // load the WebMap that represents the basemap if one was specified
+                WebMap basemapWebMap = null;
+                if (basemapPortalItemId != null && !basemapPortalItemId.isEmpty()) {
+                    basemapWebMap = WebMap.newInstance(basemapPortalItemId, portal);
+                }
+                final BaseMap basemap = basemapWebMap != null ? basemapWebMap .getBaseMap() : null;
+
+                if (webmap != null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MapView mapView = new MapView(getActivity(), webmap, basemap, null, null);
+
+                            setMapView(mapView);
+                            mapView.zoomin();
+
+                        }
+                    });
+                } else {
+                    throw new Exception("Failed to load web map.");
+                }
+                return null;
+            }
+        });
+    }
+
 
 	/**
 	 * Takes a MapView that has already been instantiated to show a WebMap, completes its setup by setting
@@ -651,7 +707,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		findParams.setLocation(mMapView.getCenter(),mMapView.getSpatialReference());
 
 		// Calculate distance for find operation
-		Envelope mapExtent = new Envelope();
+		Envelope mapExtent = new Envelope(-9934020.129737763,1537570.03146507,-9933138.998255534,1537913.3795470244);
 		mMapView.getExtent().queryEnvelope(mapExtent);
 		// assume map is in metres, other units wont work, double current envelope
 		double distance = (mapExtent != null && mapExtent.getWidth() > 0) ? mapExtent.getWidth() * 2 : 10000;
@@ -1039,6 +1095,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			routeFAF.setFeatures(new Graphic[] { sgStart, sgEnd });
 			routeFAF.setCompressedRequest(true);
 			routeParams.setStops(routeFAF);
+			//noinspection ResourceType
 			routeParams.setOutSpatialReference(mMapView.getSpatialReference());
 
 			// Solve the route
@@ -1086,7 +1143,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			mRouteLayer.addGraphics(new Graphic[] { routeGraphic, startGraphic,endGraphic });
 
 			// Zoom to the extent of the entire route with a padding
-			mMapView.setExtent(route.getEnvelope(), 100);
+			mMapView.setExtent(route.getEnvelope(),100);
 
 			// Save routing directions so user can display them later
 			mRoutingDirections = route.getRoutingDirections();
@@ -1139,7 +1196,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			Locator locator = Locator.createOnlineLocator(getString(R.string.geocodeservice_url));
 			try {
 				// Our input and output spatial reference will be the same as the map
-				SpatialReference mapRef = mMapView.getSpatialReference();
+				@SuppressWarnings("ResourceType") SpatialReference mapRef = mMapView.getSpatialReference();
 				result = locator.reverseGeocode(mPoint, 100.0, mapRef, mapRef);
 				mLocationLayerPoint = mPoint;
 			} catch (Exception e) {
