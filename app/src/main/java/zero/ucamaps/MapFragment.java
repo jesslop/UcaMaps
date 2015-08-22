@@ -56,6 +56,7 @@ import zero.ucamaps.location.DirectionsDialogFragment.DirectionsDialogListener;
 import zero.ucamaps.location.RoutingDialogFragment;
 import zero.ucamaps.location.RoutingDialogFragment.RoutingDialogListener;
 import zero.ucamaps.tools.Compass;
+import zero.ucamaps.tts.TTSManager;
 import zero.ucamaps.util.TaskExecutor;
 
 import com.esri.core.geometry.Envelope;
@@ -90,6 +91,8 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
  */
 public class MapFragment extends Fragment implements RoutingDialogListener, OnCancelListener {
 	public static final String TAG = MapFragment.class.getSimpleName();
+
+    TTSManager ttsManager = null;
 
 	private static final String KEY_BASEMAP_ITEM = "KEY_BASEMAP_ITEM";
 	private static final String KEY_IS_LOCATION_TRACKING = "IsLocationTracking";
@@ -172,6 +175,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+        ttsManager = new TTSManager();
+        ttsManager.init(getActivity());
+
 		setHasOptionsMenu(true);
 
         Bundle args = savedInstanceState != null ? savedInstanceState
@@ -195,7 +201,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 
 		if (mBasemapPortalItemId != null) {
-			// show a map with the basemap represented by  mBasemapPortalItemId
+			// show a map with the basemap represented by mBasemapPortalItemId
 			loadWebMapIntoMapView(mBasemapPortalItemId, new Portal("http://www.arcgis.com", null));
 		} else {
 			// show the default map
@@ -309,7 +315,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                 if (basemapPortalItemId != null && !basemapPortalItemId.isEmpty()) {
                     basemapWebMap = WebMap.newInstance(basemapPortalItemId, portal);
                 }
-                final BaseMap basemap = basemapWebMap != null ? basemapWebMap .getBaseMap() : null;
+                final BaseMap basemap = basemapWebMap != null ? basemapWebMap.getBaseMap() : null;
 
                 if (webmap != null) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -492,7 +498,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 		TOP_MARGIN_COMPASS = TOP_MARGIN_SEARCH + height + 15;
 
-		((MarginLayoutParams) compassFrameParams).setMargins(LEFT_MARGIN_COMPASS, TOP_MARGIN_COMPASS, RIGHT_MARGIN_COMPASS,BOTTOM_MARGIN_COMPASS);
+		((MarginLayoutParams) compassFrameParams).setMargins(LEFT_MARGIN_COMPASS, TOP_MARGIN_COMPASS, RIGHT_MARGIN_COMPASS, BOTTOM_MARGIN_COMPASS);
 
 		mCompass.setLayoutParams(compassFrameParams);
 
@@ -534,20 +540,33 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private void showDirectionsDialogFragment() {
 		// Launch a DirectionsListFragment to display list of directions
 		final DirectionsDialogFragment frag = new DirectionsDialogFragment();
+
 		frag.setRoutingDirections(mRoutingDirections,
-				new DirectionsDialogListener() {
+                new DirectionsDialogListener() {
 
-					@Override
-					public void onDirectionSelected(int position) {
-						// User has selected a particular direction dismiss the dialog and zoom to the selected direction
-						frag.dismiss();
-						RouteDirection direction = mRoutingDirections.get(position);
-						mMapView.setExtent(direction.getGeometry());
-					}
+                    @Override
+                    public void onDirectionSelected(int position) {
+                        // User has selected a particular direction dismiss the dialog and zoom to the selected direction
+                        frag.dismiss();
+                        RouteDirection direction = mRoutingDirections.get(position);
+                        String text = mRoutingDirections.get(position).getText();
+                        Toast.makeText(getActivity(),text, Toast.LENGTH_LONG).show();
+                        mMapView.setExtent(direction.getGeometry());
+                        ttsManager.initQueue(text);
+                    }
 
-				});
+                });
 		getFragmentManager().beginTransaction().add(frag, null).commit();
 	}
+
+    /**
+     * Releases the resources used by the TextToSpeech engine.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ttsManager.shutDown();
+    }
 
 	/**
 	 * Displays the search view layout
@@ -707,7 +726,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		findParams.setLocation(mMapView.getCenter(),mMapView.getSpatialReference());
 
 		// Calculate distance for find operation
-		Envelope mapExtent = new Envelope(-9934020.129737763,1537570.03146507,-9933138.998255534,1537913.3795470244);
+		Envelope mapExtent = new Envelope();
 		mMapView.getExtent().queryEnvelope(mapExtent);
 		// assume map is in metres, other units wont work, double current envelope
 		double distance = (mapExtent != null && mapExtent.getWidth() > 0) ? mapExtent.getWidth() * 2 : 10000;
@@ -848,7 +867,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	/**
 	 * Shows the Routing result layout after successful routing
 	 *
-	 * @param distance
+	 * @param distance in miles
 	 * 
 	 */
 
@@ -882,11 +901,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		tv_to.setText(" " + mEndLocation);
 
 		// Rounding off the values
-		distance = Math.round(distance * 10.0) / 10.0;
+		distance = Math.round(distance / 0.00062137) / 10.0;
 
 		TextView tv_dist = (TextView) mSearchResult.findViewById(R.id.tv_dist);
 		tv_dist.setTypeface(null, Typeface.BOLD);
-		tv_dist.setText(" (" + distance + " mts)");
+		tv_dist.setText(" (" + distance + " mts )");
 
 		// Adding the layout
 		mMapContainer.addView(mSearchResult);

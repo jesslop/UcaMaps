@@ -1,27 +1,3 @@
-/* Copyright 1995-2014 Esri
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * For additional information, contact:
- * Environmental Systems Research Institute, Inc.
- * Attn: Contracts Dept
- * 380 New York Street
- * Redlands, California, USA 92373
- *
- * email: contracts@esri.com
- *
- */
-
 package zero.ucamaps.basemaps;
 
 import java.util.ArrayList;
@@ -44,8 +20,6 @@ import zero.ucamaps.R;
 import zero.ucamaps.basemaps.BasemapsAdapter.BasemapsAdapterClickListener;
 import zero.ucamaps.dialogs.ProgressDialogFragment;
 import com.esri.core.portal.Portal;
-import com.esri.core.portal.PortalGroup;
-import com.esri.core.portal.PortalInfo;
 import com.esri.core.portal.PortalItem;
 import com.esri.core.portal.PortalQueryParams;
 import com.esri.core.portal.PortalQueryParams.PortalQuerySortOrder;
@@ -248,8 +222,9 @@ public class BasemapsDialogFragment extends DialogFragment implements BasemapsAd
     private String createDefaultQueryString() {
       String query = null;
 
-      String[] mBasemapIds = { "2161ba8a41114947bc7c533a24bdb150", // day basemap
-          "739f5ce95a2a458ba8db9a43187853c6" // night basemap
+      String[] mBasemapIds = {
+              "2161ba8a41114947bc7c533a24bdb150", // day basemap
+              "739f5ce95a2a458ba8db9a43187853c6" // night basemap
       };
 
       StringBuilder str = new StringBuilder();

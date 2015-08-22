@@ -3,6 +3,8 @@ package zero.ucamaps;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -24,11 +26,13 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
+import zero.ucamaps.tts.TTSManager;
 
 public class MainActivity extends ActionBarActivity {
 
     public static DrawerLayout mDrawerLayout;
-    public static boolean switchTheme;
+
+    private static final int TTS_CHECK_CODE = 101;
 
     /**
      * The list of menu items in the navigation drawer
@@ -149,6 +153,26 @@ public class MainActivity extends ActionBarActivity {
         invalidateOptionsMenu(); // reload the options menu
     }
 
+    private void setVoiceIntent(){
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, TTS_CHECK_CODE);
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TTS_CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                // success, create the TTS instance
+            } else {
+                // missing data, install it
+                Intent installIntent = new Intent();
+                installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installIntent);
+            }
+        }
+    }
+
     /**
      * Updates the navigation drawer items.
      */
@@ -214,26 +238,6 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onClick() {
-                // Coming Soon.
-
-                //Close and lock the drawer
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            }
-        });
-        mDrawerItems.add(item);
-
-        // Adding the voice item
-        LinearLayout view_voice = (LinearLayout) getLayoutInflater().inflate(R.layout.drawer_item_layout, null);
-        TextView text_drawer_voice = (TextView) view_voice.findViewById(R.id.drawer_item_textview);
-        ImageView icon_drawer_voice = (ImageView) view_voice.findViewById(R.id.drawer_item_icon);
-
-        text_drawer_voice.setText(getString(R.string.action_voice));
-        icon_drawer_voice.setImageResource(R.drawable.action_voice);
-        item = new DrawerItem(view_voice, new DrawerItem.OnClickListener() {
-
-            @Override
-            public void onClick() {
-                // Coming Soon.
 
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -309,5 +313,6 @@ public class MainActivity extends ActionBarActivity {
             return drawerItem.getView();
         }
     }
+
 
 }

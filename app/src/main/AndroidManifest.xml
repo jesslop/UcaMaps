@@ -27,7 +27,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <service android:name=".SpeechService" />
+            <service android:name=".SpeechService"
+                     android:enabled="true"/>
+
         </activity>
     </application>
 
