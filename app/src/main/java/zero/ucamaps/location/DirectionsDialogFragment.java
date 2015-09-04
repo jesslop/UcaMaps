@@ -123,7 +123,7 @@ public class DirectionsDialogFragment extends DialogFragment {
       textView.setText(lengthString);
       return v;
     }
-
+    // Selects the proper image for the direction
     private Drawable getRoutingIcon(RouteManeuverType maneuver) {
       Context context = getActivity();
       int id;

@@ -39,7 +39,6 @@ public class BasemapsAdapter extends BaseAdapter {
   public BasemapsAdapter(Context c) {
     mContext = c;
   }
-
   public BasemapsAdapter(Context c, ArrayList<BasemapItem> portalItems, BasemapsAdapterClickListener listener) {
     mContext = c;
     this.items = portalItems;

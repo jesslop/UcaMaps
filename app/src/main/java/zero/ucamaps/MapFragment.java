@@ -95,6 +95,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
     TTSManager ttsManager = null;
 
 	private static final String KEY_BASEMAP_ITEM = "KEY_BASEMAP_ITEM";
+    private static final String KEY_SOUND_ITEM = "KEY_SOUND_ITEM";
 	private static final String KEY_IS_LOCATION_TRACKING = "IsLocationTracking";
 	private static final int REQUEST_CODE_PROGRESS_DIALOG = 1;
 	private static final String SEARCH_HINT = "Search";
@@ -120,8 +121,10 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	// The circle area specified by search_radius and input lat/lon serves searching purpose.
 	// It is also used to construct the extent which map zooms to after the first GPS fix is retrieved.
 	private final static double SEARCH_RADIUS = 10;
-    private String mBasemapPortalItem;
 	private String mBasemapPortalItemId;
+
+    //Sound
+    private String mSoundActive;
 
 	//FrameLayout for the MapView
 	private FrameLayout mMapContainer;
@@ -145,6 +148,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private final SpatialReference mWm = SpatialReference.create(102100);
 	private final SpatialReference mEgs = SpatialReference.create(4326);
 
+    //Compass
 	Compass mCompass;
 	LayoutParams compassFrameParams;
 	private MotionEvent mLongPressEvent;
@@ -167,6 +171,17 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		return mapFragment;
 	}
 
+    public static MapFragment newSoundInstance(String basemapPortalItemId, String changeSound) {
+        MapFragment mapFragment = new MapFragment();
+
+        Bundle args = new Bundle();
+        args.putString(KEY_BASEMAP_ITEM, basemapPortalItemId);
+        args.putString(KEY_SOUND_ITEM, changeSound);
+
+        mapFragment.setArguments(args);
+        return mapFragment;
+    }
+
 	public MapFragment() {
 		// make MapFragment ctor private - use newInstance() instead
 	}
@@ -175,22 +190,22 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        ttsManager = new TTSManager();
-        ttsManager.init(getActivity());
-
-		setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         Bundle args = savedInstanceState != null ? savedInstanceState
                 : getArguments();
         if (args != null) {
             mIsLocationTracking = args.getBoolean(KEY_IS_LOCATION_TRACKING);
             mBasemapPortalItemId = args.getString(KEY_BASEMAP_ITEM);
-
+            //mSoundActive = args.getString(KEY_SOUND_ITEM);
         }
+
         // Calling setRetainInstance() causes the Fragment instance to be retained when its Activity is destroyed and
-        // recreated. This allows map Layer objects to be retained so data will not need to be fetched from the network
-        // again.
+        // recreated. This allows map Layer objects to be retained so data will not need to be fetched from the network again.
         setRetainInstance(true);
+
+        ttsManager = new TTSManager();
+        ttsManager.init(getActivity());
 
 	}
 
@@ -199,10 +214,11 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
         mMapContainer = (FrameLayout) inflater.inflate(R.layout.map_fragment_layout,container,false);
 
-
 		if (mBasemapPortalItemId != null) {
 			// show a map with the basemap represented by mBasemapPortalItemId
 			loadWebMapIntoMapView(mBasemapPortalItemId, new Portal("http://www.arcgis.com", null));
+
+
 		} else {
 			// show the default map
 			String defaultBaseMapURL = getString(R.string.default_basemap_url);
@@ -211,7 +227,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			// Set the MapView
 			setMapView(mapView);
 			mapView.zoomin();
-
 		}
 		return mMapContainer;
 	}
@@ -286,7 +301,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	@Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        //outState.putString(KEY_SOUND_ITEM, mSoundActive);
 		outState.putString(KEY_BASEMAP_ITEM, mBasemapPortalItemId);
 		outState.putBoolean(KEY_IS_LOCATION_TRACKING, mIsLocationTracking);
 
@@ -350,6 +365,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		mMapView.enableWrapAround(true);
 		mapView.setAllowRotationByPinch(true);
 
+        //Initializing sound
+        initializeSound();
+
 		// Creating an inflater
 		mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -386,8 +404,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			}
 
 			@Override
-			public void prePointersMove(float x1, float y1, float x2, float y2,
-										double factor) {
+			public void prePointersMove(float x1, float y1, float x2, float y2, double factor) {
 				if (mMapView.getRotationAngle() > 5 || mMapView.getRotationAngle() < -5) {
 					mCompass.setVisibility(View.VISIBLE);
 					mCompass.sensorManager.unregisterListener(mCompass.sensorEventListener);
@@ -396,8 +413,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			}
 
 			@Override
-			public void prePointersUp(float x1, float y1, float x2, float y2,
-									  double factor) {
+			public void prePointersUp(float x1, float y1, float x2, float y2,double factor) {
 			}
 
 		});
@@ -423,18 +439,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			}
 
 		});
-
-        // Set a single tap listener on the MapView.
-        mMapView.setOnSingleTapListener(new OnSingleTapListener() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void onSingleTap(float x, float y) {
-
-
-            }
-        });
 
 		// Setup use of magnifier on a long press on the map
 		mMapView.setShowMagnifierOnLongPress(true);
@@ -517,7 +521,23 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		mMapContainer.addView(mCompass);
 	}
 
-	/**
+
+    private void initializeSound(){
+
+        MainActivity main = (MainActivity) getActivity();
+        mSoundActive = main.getChangeSound();
+
+        if (mSoundActive.equals("Sound On")) {
+            Toast.makeText(getActivity(),mSoundActive, Toast.LENGTH_LONG).show();
+        }
+        else{
+            ttsManager.shutDown();
+            Toast.makeText(getActivity(),mSoundActive, Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    /**
 	 * Displays the Dialog Fragment which allows users to route
 	 */
 	private void showRoutingDialogFragment() {
@@ -549,10 +569,13 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                         // User has selected a particular direction dismiss the dialog and zoom to the selected direction
                         frag.dismiss();
                         RouteDirection direction = mRoutingDirections.get(position);
-                        String text = mRoutingDirections.get(position).getText();
-                        Toast.makeText(getActivity(),text, Toast.LENGTH_LONG).show();
+                        String text = mRoutingDirections.get(position).getText(); //getting the direction
                         mMapView.setExtent(direction.getGeometry());
-                        ttsManager.initQueue(text);
+
+                        if (mSoundActive.equals("Sound On")) {
+                            Toast.makeText(getActivity(),text, Toast.LENGTH_LONG).show();
+                            ttsManager.initQueue(text);
+                        }
                     }
 
                 });
@@ -685,10 +708,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 			@Override
 			public void onProviderDisabled(String arg0) {
+                Toast.makeText(getActivity(), "GPS turned off", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onProviderEnabled(String arg0) {
+                Toast.makeText(getActivity(), "GPS turned on", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -819,6 +844,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		TextView tv = (TextView) mSearchResult.findViewById(R.id.textView1);
 		tv.setTypeface(null, Typeface.BOLD);
 		tv.setText(address);
+        ttsManager.initQueue(address);
 
 		// Adding the search result layout to the map container
 		mMapContainer.addView(mSearchResult);
@@ -873,7 +899,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	private void showRoutingResultLayout(double distance) {
 
-		// Remove the layours
+        // Remove the layours
 		mMapContainer.removeView(mSearchResult);
 		mMapContainer.removeView(mSearchBox);
 
@@ -1272,4 +1298,18 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		float dp = px / (metrics.densityDpi / 160f);
 		return dp;
 	}
+
+    /**
+     * Changes the String Values for the Menu.
+     */
+
+    public String getChangeSoundFlag() {
+        return mSoundActive;
+    }
+
+    public void setChangeSoundFlag(String mSoundActive) {
+        this.mSoundActive = mSoundActive;
+    }
+
+
 }

@@ -34,6 +34,7 @@ public class Compass extends View implements SensorEventListener {
     // Sensors for accelerometer and magnetometer
     public Sensor gsensor;
     public Sensor msensor;
+    public Sensor asensor;
 
     // Used for orientation of the compass
     private float[] mGravity = new float[3];
@@ -57,8 +58,9 @@ public class Compass extends View implements SensorEventListener {
                 R.drawable.ic_compass);
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        asensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         msensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        gsensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
     public void start() {
@@ -66,8 +68,9 @@ public class Compass extends View implements SensorEventListener {
         sensorEventListener = this;
 
         // Enable the sensors
-        sensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, asensor,SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, msensor,SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, gsensor,SensorManager.SENSOR_DELAY_GAME);
     }
 
     public void stop() {

@@ -1,8 +1,5 @@
 package zero.ucamaps.tts;
 
-/**
- * Created by Jessica Lopez on 8/21/2015.
- */
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
