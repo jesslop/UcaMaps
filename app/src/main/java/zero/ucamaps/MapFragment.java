@@ -197,7 +197,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
         if (args != null) {
             mIsLocationTracking = args.getBoolean(KEY_IS_LOCATION_TRACKING);
             mBasemapPortalItemId = args.getString(KEY_BASEMAP_ITEM);
-            //mSoundActive = args.getString(KEY_SOUND_ITEM);
+            mSoundActive = args.getString(KEY_SOUND_ITEM);
         }
 
         // Calling setRetainInstance() causes the Fragment instance to be retained when its Activity is destroyed and
@@ -301,7 +301,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	@Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putString(KEY_SOUND_ITEM, mSoundActive);
+        outState.putString(KEY_SOUND_ITEM, mSoundActive);
 		outState.putString(KEY_BASEMAP_ITEM, mBasemapPortalItemId);
 		outState.putBoolean(KEY_IS_LOCATION_TRACKING, mIsLocationTracking);
 

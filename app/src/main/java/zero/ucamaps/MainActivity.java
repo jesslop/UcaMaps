@@ -25,6 +25,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import zero.ucamaps.basemaps.BasemapsDialogFragment;
+import zero.ucamaps.dialogs.AboutDialog;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -127,7 +128,9 @@ public class MainActivity extends ActionBarActivity {
 
     private void setView() {
         // show the default map
-        showMap(null);
+        //showMap(null);
+        setChangeSound("Sound Off");
+        showMapWithSound(null,changeSound);
 
     }
 
@@ -159,6 +162,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void showMapWithSound(String basemapPortalItemId, String changeSound) {
+
+        setBasemapItem(basemapPortalItemId);
 
         // remove existing MapFragment explicitly, simply replacing it can cause the app to freeze when switching basemaps
         FragmentTransaction transaction;
@@ -244,13 +249,11 @@ public class MainActivity extends ActionBarActivity {
                 if (getChangeSound().equals("Sound Off")) {
                     setChangeSound("Sound On");
                     //Toast.makeText(MainActivity.this, getChangeSound(), Toast.LENGTH_LONG).show();
-                    showMapWithSound(baseColor,"Sound On");
-
-
+                    showMapWithSound(baseColor,changeSound);
                 } else {
                     setChangeSound("Sound Off");
                     //Toast.makeText(MainActivity.this,getChangeSound(), Toast.LENGTH_SHORT).show();
-                    showMapWithSound(baseColor,"Sound Off");
+                    showMapWithSound(baseColor,changeSound);
                 }
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -271,7 +274,10 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onClick() {
-                // Coming Soon.
+
+                AboutDialog about = new AboutDialog(MainActivity.this);
+                about.setTitle("About this app");
+                about.show();
 
                 //Close and lock the drawer
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
