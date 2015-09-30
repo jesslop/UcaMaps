@@ -104,6 +104,8 @@ public class DirectionsDialogFragment extends DialogFragment {
     public View getView(int position, View convertView, ViewGroup parent) {
       // Inflate view if we haven't been given one to reuse
       View v = convertView;
+      double distanceinmeters;
+
       if (convertView == null) {
         v = getActivity().getLayoutInflater().inflate(R.layout.directions_list_item, parent, false);
       }
@@ -115,11 +117,11 @@ public class DirectionsDialogFragment extends DialogFragment {
       if (drawable != null) {
         imageView.setImageDrawable(drawable);
       }
-      TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
-      textView.setText(direction.getText());
-      textView = (TextView) v.findViewById(R.id.directions_length_textview);
-      String lengthString = String.format("%.1f mts", Double.valueOf(direction.getLength()));
-      textView.setText(lengthString);
+        TextView textView = (TextView) v.findViewById(R.id.directions_text_textview);
+        textView.setText(direction.getText());
+        textView = (TextView) v.findViewById(R.id.directions_length_textview);
+        String lengthString = String.format("%.1f mts", ( (direction.getLength() * 1609.344) / 1000));
+        textView.setText(lengthString);
       return v;
     }
     // Selects the proper image for the direction

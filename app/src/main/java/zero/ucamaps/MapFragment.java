@@ -912,7 +912,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		tv_to.setText(" " + mEndLocation);
 
 		// Rounding off the values
-		distance = Math.round(distance / 0.00062137) / 10.0;
+		distance = Math.round((distance * 1609.344));
 
 		TextView tv_dist = (TextView) mSearchResult.findViewById(R.id.tv_dist);
 		tv_dist.setTypeface(null, Typeface.BOLD);
