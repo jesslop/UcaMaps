@@ -31,9 +31,7 @@ import zero.ucamaps.dialogs.AboutDialog;
 public class MainActivity extends ActionBarActivity {
 
     public static DrawerLayout mDrawerLayout;
-
     private String changeSound = "";
-
     private String baseColor = "";
 
     /**
@@ -126,9 +124,9 @@ public class MainActivity extends ActionBarActivity {
         updateDrawer();
     }
 
+    //Initialize default view
     private void setView() {
         // show the default map
-        //showMap(null);
         setChangeSound("Sound Off");
         showMapWithSound(null,changeSound);
 
@@ -246,13 +244,12 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick() {
 
+                //Sends the parameter to the dynamic fragment
                 if (getChangeSound().equals("Sound Off")) {
                     setChangeSound("Sound On");
-                    //Toast.makeText(MainActivity.this, getChangeSound(), Toast.LENGTH_LONG).show();
                     showMapWithSound(baseColor,changeSound);
                 } else {
                     setChangeSound("Sound Off");
-                    //Toast.makeText(MainActivity.this,getChangeSound(), Toast.LENGTH_SHORT).show();
                     showMapWithSound(baseColor,changeSound);
                 }
                 //Close and lock the drawer

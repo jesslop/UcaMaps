@@ -24,7 +24,6 @@ public class RoutingDialogFragment extends DialogFragment {
 	private RoutingDialogListener mRoutingDialogListener;
 
 	private ImageView mSwap;
-
 	private Button mButton;
 
 	/**
@@ -53,7 +52,6 @@ public class RoutingDialogFragment extends DialogFragment {
 
 	/**
 	 * Sets listener for click on Get Route button.
-	 * 
 	 * @param listener
 	 */
 	public void setRoutingDialogListener(RoutingDialogListener listener) {

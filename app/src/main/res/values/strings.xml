@@ -15,10 +15,10 @@
     <string name="no_maps">No maps</string>
 
     <!-- route service -->
-    <string name="routingservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/MapaUCA_2015v4/NAServer/Route</string>
+    <string name="routingservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/mapa_uca_rc_2015/NAServer/Route</string>
 
     <!-- geocode service -->
-    <string name="geocodeservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/features_locator/GeocodeServer</string>
+    <string name="geocodeservice_url">http://mapas.uca.edu.sv/arcgis/rest/services/TG/locator/GeocodeServer</string>
 
     <!-- place search hint -->
     <string name="address">Place name or address</string>

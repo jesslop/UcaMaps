@@ -1,9 +1,5 @@
 package zero.ucamaps.tools;
 
-/**
- * Created by Jessica Lopez on 6/20/2015.
- */
-
 import com.esri.android.map.MapView;
 
 import android.content.Context;

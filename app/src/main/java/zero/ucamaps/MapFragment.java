@@ -92,8 +92,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 public class MapFragment extends Fragment implements RoutingDialogListener, OnCancelListener {
 	public static final String TAG = MapFragment.class.getSimpleName();
 
-    TTSManager ttsManager = null;
-
 	private static final String KEY_BASEMAP_ITEM = "KEY_BASEMAP_ITEM";
     private static final String KEY_SOUND_ITEM = "KEY_SOUND_ITEM";
 	private static final String KEY_IS_LOCATION_TRACKING = "IsLocationTracking";
@@ -121,10 +119,12 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	// The circle area specified by search_radius and input lat/lon serves searching purpose.
 	// It is also used to construct the extent which map zooms to after the first GPS fix is retrieved.
 	private final static double SEARCH_RADIUS = 10;
-	private String mBasemapPortalItemId;
+
+    private String mBasemapPortalItemId;
 
     //Sound
-    private String mSoundActive;
+	TTSManager ttsManager = null;
+	private String mSoundActive;
 
 	//FrameLayout for the MapView
 	private FrameLayout mMapContainer;
@@ -217,8 +217,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		if (mBasemapPortalItemId != null) {
 			// show a map with the basemap represented by mBasemapPortalItemId
 			loadWebMapIntoMapView(mBasemapPortalItemId, new Portal("http://www.arcgis.com", null));
-
-
 		} else {
 			// show the default map
 			String defaultBaseMapURL = getString(R.string.default_basemap_url);
@@ -236,7 +234,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		super.onCreateOptionsMenu(menu, inflater);
 		// Inflate the menu items for use in the action bar
 		inflater.inflate(R.menu.action, menu);
-
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -355,7 +352,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	/**
 	 * Takes a MapView that has already been instantiated to show a WebMap, completes its setup by setting
      * various listeners and attributes, and sets it as the activity's content view.
-	 * 
 	 * @param mapView
 	 */
 	private void setMapView(final MapView mapView) {
@@ -487,7 +483,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Adds the compass as per the height of the layout
-	 * 
 	 * @param height
 	 */
 	private void addCompass(int height) {
@@ -521,7 +516,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 		mMapContainer.addView(mCompass);
 	}
 
-
+    /**
+     * Initialize the sound depending on the variable in the MainActivity
+     */
     private void initializeSound(){
 
         MainActivity main = (MainActivity) getActivity();
@@ -571,7 +568,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
                         RouteDirection direction = mRoutingDirections.get(position);
                         String text = mRoutingDirections.get(position).getText(); //getting the direction
                         mMapView.setExtent(direction.getGeometry());
-
+                        //Reads the direction with sound
                         if (mSoundActive.equals("Sound On")) {
                             Toast.makeText(getActivity(),text, Toast.LENGTH_LONG).show();
                             ttsManager.initQueue(text);
@@ -593,7 +590,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Displays the search view layout
-	 * 
 	 */
 	private void showSearchBoxLayout() {
 
@@ -726,8 +722,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Called from search_layout.xml when user presses Search button.
-	 * @param //view
-	 */
+     */
 	public void onSearchButtonClicked(String address) {
 
 		// Hide virtual keyboard
@@ -771,7 +766,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Called by RoutingDialogFragment when user presses Get Route button.
-	 * 
 	 * @param startPoint
 	 *            String entered by user to define start point.
 	 * @param endPoint
@@ -796,7 +790,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Set up Route Parameters to execute RouteTask
-	 * 
 	 * @param start
 	 * @param end
 	 */
@@ -828,7 +821,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	/**
 	 * Shows the search result in the layout after successful geocoding and reverse geocoding
 	 */
-
 	private void showSearchResultLayout(String address) {
 		// Remove the layouts
 		mMapContainer.removeView(mSearchBox);
@@ -857,10 +849,8 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			public void onClick(View v) {
 				// Remove the search result view
 				mMapContainer.removeView(mSearchResult);
-
 				// Add the search box view
 				showSearchBoxLayout();
-
 				// Remove all graphics from the map
 				resetGraphicsLayers();
 
@@ -892,20 +882,15 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	/**
 	 * Shows the Routing result layout after successful routing
-	 *
-	 * @param distance in miles
-	 * 
+	 * @param distance in meters
 	 */
-
 	private void showRoutingResultLayout(double distance) {
-
         // Remove the layours
 		mMapContainer.removeView(mSearchResult);
 		mMapContainer.removeView(mSearchBox);
 
 		// Inflate the new layout from the xml file
 		mSearchResult = mInflater.inflate(R.layout.routing_result, null);
-
 		mSearchResult.setLayoutParams(mlayoutParams);
 
 		// Shorten the start and end location by finding the first comma if
@@ -948,7 +933,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				showSearchBoxLayout();
 				// Remove all graphics from the map
 				resetGraphicsLayers();
-
 			}
 		});
 
@@ -1026,7 +1010,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 			} else {
 				// Use first result in the list
 				LocatorGeocodeResult geocodeResult = result.get(0);
-
 				// get return geometry from geocode result
 				Point resultPoint = geocodeResult.getLocation();
 				// create marker symbol to represent location
@@ -1036,11 +1019,9 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 				Graphic resultLocGraphic = new Graphic(resultPoint,resultSymbol);
 				// add graphic to location layer
 				mLocationLayer.addGraphic(resultLocGraphic);
-
 				// Get the address
 				String address = geocodeResult.getAddress();
 				mLocationLayerPoint = resultPoint;
-
 				// Zoom map to geocode result location
 				mMapView.zoomToResolution(geocodeResult.getLocation(), 2);
 				showSearchResultLayout(address);

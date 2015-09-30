@@ -31,9 +31,7 @@ import com.esri.core.portal.PortalQueryResultSet;
 public class BasemapsDialogFragment extends DialogFragment implements BasemapsAdapterClickListener, OnCancelListener {
 
   private static final String TAG = "BasemapsDialogFragment";
-
   private static final String AGOL_PORTAL_URL = "http://www.arcgis.com";
-
   private static final int REQUEST_CODE_PROGRESS_DIALOG = 1;
 
   /**
@@ -43,29 +41,22 @@ public class BasemapsDialogFragment extends DialogFragment implements BasemapsAd
   public interface BasemapsDialogListener {
     /**
      * Called when a basemap is selected.
-     * 
      * @param itemId portal item id of the selected basemap
      */
     public void onBasemapChanged(String itemId);
   }
 
   private BasemapsDialogListener mBasemapsDialogListener;
-
   private BasemapsAdapter mBasemapsAdapter;
-
   private ArrayList<BasemapItem> mBasemapItemList;
-
   private BasemapSearchAsyncTask mPendingBasemapSearch;
 
   // Mandatory empty constructor for fragment manager to recreate fragment after it's destroyed
   public BasemapsDialogFragment() {
   }
 
-  /**
-   * Sets listener for selection of new basemap.
-   * 
-   * @param listener
-   */
+  /** Sets listener for selection of new basemap.
+   * @param listener */
   public void setBasemapsDialogListener(BasemapsDialogListener listener) {
     mBasemapsDialogListener = listener;
   }
@@ -129,7 +120,6 @@ public class BasemapsDialogFragment extends DialogFragment implements BasemapsAd
     private static final String TAG_BASEMAP_SEARCH_PROGRESS_DIALOG = "TAG_BASEMAP_SEARCH_PROGRESS_DIALOG";
 
     private Exception mException;
-
     private ProgressDialogFragment mProgressDialog;
 
     public BasemapSearchAsyncTask() {
@@ -177,15 +167,14 @@ public class BasemapsDialogFragment extends DialogFragment implements BasemapsAd
     }
 
     /**
-     * Fetches basemaps from the user's portal if signed in, otherwise from arcgis.com portal.
-     * 
+     * Fetches basemaps from the user's portal, otherwise from arcgis.com portal.
      * @throws Exception
      */
     private void fetchBasemapItems() throws Exception {
 
       PortalQueryResultSet<PortalItem> basemapResult = null;
 
-        // we are not signed in - fetch a selection of basemaps from arcgis.com
+        // fetch a selection of basemaps from arcgis.com
         Portal portal = new Portal(AGOL_PORTAL_URL, null);
 
         // Create a PortalQueryParams to query for items in basemap group

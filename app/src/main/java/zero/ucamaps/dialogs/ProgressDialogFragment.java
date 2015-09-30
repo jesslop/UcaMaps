@@ -15,11 +15,11 @@ import android.os.Bundle;
  * implement OnCancelListener if it wants to be notified when the progress dialog is canceled.
  */
 public class ProgressDialogFragment extends DialogFragment {
-  private static final String KEY_PROGRESS_MESSAGE = "KEY_PROGRESS_MESSAGE";
 
+  private static final String KEY_PROGRESS_MESSAGE = "KEY_PROGRESS_MESSAGE";
   private OnCancelListener mOnCancelListener;
 
-  private ProgressDialogFragment() {
+  public ProgressDialogFragment() {
   }
 
   /**
@@ -57,7 +57,6 @@ public class ProgressDialogFragment extends DialogFragment {
     super.onAttach(activity);
 
     // check if the host activity or fragment implements OnCancelListener
-    //
     Fragment targetFragment = getTargetFragment();
     if (targetFragment instanceof OnCancelListener) {
       mOnCancelListener = (OnCancelListener) targetFragment;

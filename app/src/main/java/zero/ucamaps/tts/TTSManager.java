@@ -18,6 +18,7 @@ public class TTSManager {
         }
     }
 
+    //Initialize the speech parameters for downloading the spanish language
     private TextToSpeech.OnInitListener onInitListener = new TextToSpeech.OnInitListener() {
         Locale locSpanish = new Locale ("spa","US");
 
@@ -36,10 +37,12 @@ public class TTSManager {
         }
     };
 
+    //Turns off the ttsmanager
     public void shutDown() {
         mTts.shutdown();
     }
 
+    //Multiple line reading
     public void addQueue(String text) {
         if (isLoaded)
             mTts.speak(text, TextToSpeech.QUEUE_ADD, null);
@@ -47,6 +50,7 @@ public class TTSManager {
             Log.e("error", "TTS Not Initialized");
     }
 
+    //One line reading
     public void initQueue(String text) {
 
         if (isLoaded)

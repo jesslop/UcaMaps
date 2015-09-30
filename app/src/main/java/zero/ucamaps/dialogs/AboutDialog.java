@@ -1,8 +1,5 @@
 package zero.ucamaps.dialogs;
 
-/**
- * Created by Jessica Lopez on 9/14/2015.
- */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +22,7 @@ public class AboutDialog extends Dialog{
     }
 
 /**
- * Standard Android on create method that gets called when the activity initialized.
+ * Creates the template of the Dialog
  */
 
     @Override
@@ -38,6 +35,10 @@ public class AboutDialog extends Dialog{
         tv.setLinkTextColor(Color.DKGRAY);
         Linkify.addLinks(tv, Linkify.ALL);
     }
+
+    /**
+     * Read the text from archives
+     */
 
     public static String readRawTextFile(int id) {
         InputStream inputStream = mContext.getResources().openRawResource(id);
@@ -55,5 +56,4 @@ public class AboutDialog extends Dialog{
 
         return text.toString();
     }
-
 }

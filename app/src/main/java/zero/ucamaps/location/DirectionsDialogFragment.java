@@ -25,7 +25,6 @@ import com.esri.core.tasks.na.RouteManeuverType;
 public class DirectionsDialogFragment extends DialogFragment {
 
   private static final String TAG = "DirectionsDialogFragment";
-
   /**
    * A callback interface that all activities containing this fragment must implement, to be informed when a particular
    * direction is selected from the list.
@@ -151,9 +150,6 @@ public class DirectionsDialogFragment extends DialogFragment {
           break;
         case U_TURN:
           id = R.drawable.ic_routing_u_turn;
-          break;
-        case FERRY:
-          id = R.drawable.ic_routing_take_ferry;
           break;
         case ROUNDABOUT:
           id = R.drawable.ic_routing_get_on_roundabout;

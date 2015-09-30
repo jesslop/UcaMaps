@@ -15,14 +15,12 @@ import android.widget.TextView;
 import zero.ucamaps.R;
 
 public class BasemapsAdapter extends BaseAdapter {
-
   /**
    * A callback interface that indicates when a basemap in the list has been clicked.
    */
   public interface BasemapsAdapterClickListener {
     /**
      * Callback for when a basemap list item is clicked.
-     * 
      * @param listPosition Position within the list of an item that has been clicked.
      */
     public void onBasemapItemClicked(int listPosition);
@@ -36,9 +34,12 @@ public class BasemapsAdapter extends BaseAdapter {
   // hold onto a copy of all basemap items
   List<BasemapItem> items;
 
+  //mandatory constructor
   public BasemapsAdapter(Context c) {
     mContext = c;
   }
+
+  //custom constructor with the paramenters we need
   public BasemapsAdapter(Context c, ArrayList<BasemapItem> portalItems, BasemapsAdapterClickListener listener) {
     mContext = c;
     this.items = portalItems;
