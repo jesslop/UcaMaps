@@ -213,7 +213,9 @@ public class BasemapsDialogFragment extends DialogFragment implements BasemapsAd
 
       String[] mBasemapIds = {
               "2161ba8a41114947bc7c533a24bdb150", // day basemap
-              "739f5ce95a2a458ba8db9a43187853c6" // night basemap
+              "b454f8d950054d419e053dde0c9269ba", // night basemap
+              "9f5aa3cc27c24447bd46a11ec586c904" // alternative basemap
+
       };
 
       StringBuilder str = new StringBuilder();
