@@ -118,7 +118,7 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 
 	// The circle area specified by search_radius and input lat/lon serves searching purpose.
 	// It is also used to construct the extent which map zooms to after the first GPS fix is retrieved.
-	private final static double SEARCH_RADIUS = 10;
+	private final static double SEARCH_RADIUS = 5;
 
     private String mBasemapPortalItemId;
 
@@ -160,16 +160,6 @@ public class MapFragment extends Fragment implements RoutingDialogListener, OnCa
 	private View mSearchResult;
 	private LayoutInflater mInflater;
 	private String mStartLocation, mEndLocation;
-
-	public static MapFragment newInstance(String basemapPortalItemId) {
-		MapFragment mapFragment = new MapFragment();
-
-		Bundle args = new Bundle();
-		args.putString(KEY_BASEMAP_ITEM, basemapPortalItemId);
-
-		mapFragment.setArguments(args);
-		return mapFragment;
-	}
 
     public static MapFragment newSoundInstance(String basemapPortalItemId, String changeSound) {
         MapFragment mapFragment = new MapFragment();

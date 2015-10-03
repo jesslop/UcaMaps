@@ -135,29 +135,6 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Opens the map represented by the specified portal item or if null, opens a default map.
      */
-    public void showMap(String basemapPortalItemId) {
-
-        setBasemapItem(basemapPortalItemId);
-
-        // remove existing MapFragment explicitly, simply replacing it can cause the app to freeze when switching basemaps
-        FragmentTransaction transaction;
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment currentMapFragment = fragmentManager.findFragmentByTag(MapFragment.TAG);
-        if (currentMapFragment != null) {
-            transaction = fragmentManager.beginTransaction();
-            transaction.remove(currentMapFragment);
-            transaction.commit();
-        }
-
-        MapFragment mapFragment = MapFragment.newInstance(basemapPortalItemId);
-
-        transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.uca_maps_activity_content_frame, mapFragment,MapFragment.TAG);
-        transaction.addToBackStack(null);
-        transaction.commit();
-
-        invalidateOptionsMenu(); // reload the options menu
-    }
 
     public void showMapWithSound(String basemapPortalItemId, String changeSound) {
 
@@ -202,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
 
                     @Override
                     public void onBasemapChanged(String itemId) {
-                        showMap(itemId);
+                        showMapWithSound(itemId,changeSound);
                     }
                 });
                 basemapsFrag.show(getFragmentManager(), null);
